@@ -9,8 +9,12 @@
 # Name of the subdirectory
 #clone_dir="stable-diffusion-webui"
 
+<<<<<<< Updated upstream
 # Commandline arguments for webui.py, for example: export COMMANDLINE_ARGS="--medvram --opt-split-attention"
-#export COMMANDLINE_ARGS=""
+#export COMMANDLINE_ARGS="--skip-torch-cuda-test --disable-nan-check --no-gradio-queue --no-half-vae --upcast-sampling --opt-sub-quad-attention --no-hashing --precision full --use-cpu interrogate --autolaunch"
+=======
+#cmd_line_args: --test-server --reinstall-torch --update-all-extensions --update-check --skip-install --listen --skip-python-version-check --skip-version-check
+>>>>>>> Stashed changes
 
 # python3 executable
 #python_cmd="python3"
