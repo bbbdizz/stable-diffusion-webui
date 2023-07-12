@@ -575,7 +575,7 @@ def create_infotext(p, all_prompts, all_seeds, all_subseeds, comments=None, iter
         "Model": (None if not opts.add_model_name_to_info or not shared.sd_model.sd_checkpoint_info.model_name else shared.sd_model.sd_checkpoint_info.model_name.replace(',', '').replace(':', '')),
         "Variation seed": (None if p.subseed_strength == 0 else all_subseeds[index]),
         "Variation seed strength": (None if p.subseed_strength == 0 else p.subseed_strength),
-        "Seed resize from": (None if p.seed_resize_from_w == 0 or p.seed_resize_from_h == 0 else f"{p.seed_resize_from_w}x{p.seed_resize_from_h}"),
+        "Seed resize from": (None if p.seed_resize_from_w <= 0 or p.seed_resize_from_h <= 0 else f"{p.seed_resize_from_w}x{p.seed_resize_from_h}"),
         "Denoising strength": getattr(p, 'denoising_strength', None),
         "Conditional mask weight": getattr(p, "inpainting_mask_weight", shared.opts.inpainting_mask_weight) if p.is_using_inpainting_conditioning else None,
         "Clip skip": None if clip_skip <= 1 else clip_skip,
@@ -606,7 +606,7 @@ def process_images(p: StableDiffusionProcessing) -> Processed:
 
     try:
         # if no checkpoint override or the override checkpoint can't be found, remove override entry and load opts checkpoint
-        if sd_models.checkpoint_alisases.get(p.override_settings.get('sd_model_checkpoint')) is None:
+        if sd_models.checkpoint_aliases.get(p.override_settings.get('sd_model_checkpoint')) is None:
             p.override_settings.pop('sd_model_checkpoint', None)
             sd_models.reload_model_weights()
 
@@ -1077,6 +1077,9 @@ class StableDiffusionProcessingTxt2Img(StableDiffusionProcessing):
             self.calculate_hr_conds()
 
         sd_models.apply_token_merging(self.sd_model, self.get_token_merging_ratio(for_hr=True))
+
+        if self.scripts is not None:
+            self.scripts.before_hr(self)
 
         samples = self.sampler.sample_img2img(self, samples, noise, self.hr_c, self.hr_uc, steps=self.hr_second_pass_steps or self.steps, image_conditioning=image_conditioning)
 
